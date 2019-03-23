@@ -51,7 +51,7 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
         scene = SCNScene()
         
         
-        let earthGeometry = SCNSphere(radius: 1)
+        let earthGeometry = SCNSphere(radius: 6378.0)
         earthGeometry.segmentCount = 96
         let earthMaterial = SCNMaterial()
         earthMaterial.diffuse.contents = UIImage(named: "8k_earth_daymap.jpg")
@@ -101,14 +101,41 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
         return nil
     }
     
-    public func compileShaders(vertices: [SCNVector3]) {
+    func compileShaders(_ tles: [TLE]) {
+        print(tles)
         let program = SCNProgram()
         program.fragmentFunctionName = "dot_fragment"
         program.vertexFunctionName = "dot_vertex"
         program.library = self.getShaders()
         
-        let indices: [UInt32] = [UInt32](0 ..< UInt32(vertices.count))
-        let testgeo = SCNGeometry(sources: [SCNGeometrySource(vertices: vertices)], elements:
+        let indices: [UInt32] = [UInt32](0 ..< UInt32(tles.count))
+        
+        let data = Data(bytes: tles, count: tles.count * MemoryLayout<TLE>.size)
+        
+        let positionGeometry = SCNGeometrySource(
+            data: data,
+            semantic: .vertex,
+            vectorCount: tles.count,
+            usesFloatComponents: true,
+            componentsPerVector: 3,
+            bytesPerComponent: MemoryLayout<Float>.size,
+            dataOffset: 0,
+            dataStride: MemoryLayout<TLE>.size
+        )
+        let normalGeometry = SCNGeometrySource(
+            data: data,
+            semantic: .normal,
+            vectorCount: tles.count,
+            usesFloatComponents: true,
+            componentsPerVector: 3,
+            bytesPerComponent: MemoryLayout<Float>.size,
+            dataOffset: MemoryLayout<Float>.stride * 3,
+            dataStride: MemoryLayout<TLE>.size
+        )
+        let testgeo = SCNGeometry(sources: [
+                positionGeometry,
+                normalGeometry,
+            ], elements:
             [SCNGeometryElement(indices: indices, primitiveType: .point)]
         )
         let material = SCNMaterial()
@@ -121,7 +148,6 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
         self.scene.rootNode.addChildNode(testnode)
         
         program.handleBinding(ofBufferNamed: "orbitally_frame", frequency: .perFrame) { (stream, node, shadable, renderer) in
-            
             let fov: simd_float1
             if #available(iOS 11.0, *) {
                 fov = Float(renderer.pointOfView?.camera?.fieldOfView ?? 1)
@@ -131,10 +157,11 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
             
             let currentDate = JulianMath.secondsSinceReferenceDate(Date())
             let currentJulianDate = JulianMath.julianDateFromSecondsSinceReferenceDate(secondsSinceReferenceDate: currentDate)
-
+            let rotationFromGeocentric = JulianMath.rotationFromGeocentricforJulianDate(julianDate: currentJulianDate)
             var data: [simd_float1] = [
                 fov,
-                simd_float1(currentJulianDate)
+                simd_float1(currentJulianDate),
+                simd_float1(rotationFromGeocentric),
             ]
             let count = MemoryLayout<simd_float1>.stride
             stream.writeBytes(&data, count: count)
@@ -150,7 +177,7 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
             (degree: UInt8)  -> SCNVector3 in
             let anomaly: Double = Double(degree) * 8.0
             let pos = satellite.satelliteCartesianPosition(eccentricAnomaly: anomaly, julianDate: currentJulianDate)
-            return SCNVector3(x: Float(pos.x) / 6378.0, y: Float(pos.y) / 6378.0, z: Float(pos.z) / 6378.0)
+            return SCNVector3(x: Float(pos.x), y: Float(pos.y), z: Float(pos.z))
         }
         
         
@@ -180,10 +207,34 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
             return
         }
         satelliteManager.addSatellitesFromTLEData(tleString: tle)
-        let coords = satelliteManager.cartesianLocationsForSatellites()
-        compileShaders(vertices: Array(coords.values))
+        
+        let currentDate = JulianMath.secondsSinceReferenceDate(Date())
+        let currentJulianDate = JulianMath.julianDateFromSecondsSinceReferenceDate(secondsSinceReferenceDate: currentDate)
+
+        let tles = self.satelliteManager.satellites.map { (satellite) -> TLE in
+            let tle = satellite.twoLineElementSet!
+            let currentMeanAnomaly = tle.meanAnomalyForJulianDate(julianDate: currentJulianDate)
+            let currentEccentricAnomaly = tle.eccentricAnomalyForMeanAnomaly(meanAnomaly: currentMeanAnomaly)
+            return TLE(
+                eccentricAnomaly: Float(currentEccentricAnomaly),
+                semimajorAxis: Float(tle.semimajorAxis()),
+                eccentricity: Float(tle.eccentricity),
+                inclination: Float(tle.inclination),
+                argumentOfPerigee: Float(tle.argumentOfPerigee),
+                rightAscensionOfTheAscendingNode: Float(tle.rightAscensionOfTheAscendingNode)
+            )
+        }
+        compileShaders(tles)
         for sat in satelliteManager.satellites {
             loadOrbits(satellite: sat)
         }
+    }
+    struct TLE {
+        var eccentricAnomaly: Float
+        var semimajorAxis: Float
+        var eccentricity: Float
+        var inclination: Float
+        var argumentOfPerigee: Float
+        var rightAscensionOfTheAscendingNode: Float
     }
 }
