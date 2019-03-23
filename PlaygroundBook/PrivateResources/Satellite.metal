@@ -38,8 +38,8 @@ vertex VertexOut dot_vertex(VertexIn in [[ stage_in ]],
     out.position = scn_frame.viewProjectionTransform * float4(in.position, 1.0);
     
     float fov = abs(atan(scn_frame.projectionTransform[2][2] / scn_frame.projectionTransform[1][1]));
-    out.point_size = 0.5 / fov;
-    out.point_size = min(out.point_size, 25.0);
+    out.point_size = 2.0 / fov;
+    out.point_size = min(out.point_size, 20.0);
     out.point_size = max(out.point_size, 5.0);
     return out;
 }

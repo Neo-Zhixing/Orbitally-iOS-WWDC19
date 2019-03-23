@@ -106,7 +106,7 @@ class Satellite {
         let relativeZ = geocentricZ
         let latitude = 90.0 - acos(relativeZ / sqrt(relativeX * relativeX + relativeY * relativeY + relativeZ * relativeZ)) * 180.0 / .pi
         let longitude = atan2(relativeY, relativeX) * 180.0 / .pi
-        let altitude = currentOrbitalRadius - 6370.0
+        let altitude = currentOrbitalRadius
         currentSatellitePosition = GeoCoordinates(latitude: latitude, longitude: longitude, altitude: altitude)
         
 /*

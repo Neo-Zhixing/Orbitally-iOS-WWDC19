@@ -124,15 +124,14 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
     let satelliteManager = ZeitSatTrackManager.sharedInstance
     
     public func loadSats () {
-        
-        guard let url = Bundle.main.url(forResource: "full", withExtension: "txt"),
+        guard let url = Bundle.main.url(forResource: "Iridium", withExtension: "txt"),
             let tle = try? String(contentsOf: url) else {
             return
         }
         satelliteManager.addSatellitesFromTLEData(tleString: tle)
         let locations = satelliteManager.locationsForSatellites()
         let coords = locations.map { (name, location) -> SCNVector3 in
-            let r = location.altitude / 6378.0 + 1
+            let r = location.altitude / 6370.0
             let latitude = Double.pi * (location.latitude / 180)
             let longitude = Double.pi * (location.longitude / 180)
             let latCos = cos(latitude)
