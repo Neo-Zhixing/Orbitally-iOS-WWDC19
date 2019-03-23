@@ -19,9 +19,17 @@
 		5EF2F9AE2054BBF300191409 /* LiveViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EF2F9AD2054BBF300191409 /* LiveViewController.swift */; };
 		5EF2F9B72054E6FB00191409 /* Chapters in Copy Book Contents */ = {isa = PBXBuildFile; fileRef = 5EF2F9B62054E6F900191409 /* Chapters */; };
 		5EF2F9B82054E6FE00191409 /* Sources in Copy Book Contents */ = {isa = PBXBuildFile; fileRef = 5EF2F9A52054BBB200191409 /* Sources */; };
+		98082A962245F591003B5A94 /* full.txt in Resources */ = {isa = PBXBuildFile; fileRef = 98082A952245F590003B5A94 /* full.txt */; };
 		986897132245D6FF00D9902E /* Satellite.metal in Sources */ = {isa = PBXBuildFile; fileRef = 98C39F0B22456227005D10AD /* Satellite.metal */; };
 		986897142245D87600D9902E /* Satellite.metal in Resources */ = {isa = PBXBuildFile; fileRef = 98C39F0B22456227005D10AD /* Satellite.metal */; };
 		989A23F622449FC1005857DF /* 8k_earth_daymap.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 989A23F522449FC0005857DF /* 8k_earth_daymap.jpg */; };
+		98AB62492245DBB6001E94A0 /* Satellite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98AB62432245DBB5001E94A0 /* Satellite.swift */; };
+		98AB624A2245DBB6001E94A0 /* CelestialBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98AB62442245DBB6001E94A0 /* CelestialBody.swift */; };
+		98AB624B2245DBB6001E94A0 /* ZeitSatTrackManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98AB62452245DBB6001E94A0 /* ZeitSatTrackManager.swift */; };
+		98AB624C2245DBB6001E94A0 /* EarthStation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98AB62462245DBB6001E94A0 /* EarthStation.swift */; };
+		98AB624D2245DBB6001E94A0 /* TwoLineElementSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98AB62472245DBB6001E94A0 /* TwoLineElementSet.swift */; };
+		98AB624E2245DBB6001E94A0 /* JulianMath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98AB62482245DBB6001E94A0 /* JulianMath.swift */; };
+		98AB62502245DF7F001E94A0 /* Iridium.txt in Resources */ = {isa = PBXBuildFile; fileRef = 98AB624F2245DF7F001E94A0 /* Iridium.txt */; };
 		98D7288C22455A2100D01DF3 /* 2k_earth_specular_map.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 98D7288922455A2000D01DF3 /* 2k_earth_specular_map.tiff */; };
 		98D7288D22455A2100D01DF3 /* 2k_earth_normal_map.tiff in Resources */ = {isa = PBXBuildFile; fileRef = 98D7288A22455A2100D01DF3 /* 2k_earth_normal_map.tiff */; };
 		98D7288E22455A2100D01DF3 /* 2k_earth_nightmap.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 98D7288B22455A2100D01DF3 /* 2k_earth_nightmap.jpg */; };
@@ -125,7 +133,15 @@
 		5EF2F9AB2054BBF300191409 /* libBook_Sources.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libBook_Sources.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5EF2F9AD2054BBF300191409 /* LiveViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveViewController.swift; sourceTree = "<group>"; };
 		5EF2F9B62054E6F900191409 /* Chapters */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Chapters; sourceTree = "<group>"; };
+		98082A952245F590003B5A94 /* full.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = full.txt; sourceTree = "<group>"; };
 		989A23F522449FC0005857DF /* 8k_earth_daymap.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 8k_earth_daymap.jpg; sourceTree = "<group>"; };
+		98AB62432245DBB5001E94A0 /* Satellite.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Satellite.swift; sourceTree = "<group>"; };
+		98AB62442245DBB6001E94A0 /* CelestialBody.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CelestialBody.swift; sourceTree = "<group>"; };
+		98AB62452245DBB6001E94A0 /* ZeitSatTrackManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZeitSatTrackManager.swift; sourceTree = "<group>"; };
+		98AB62462245DBB6001E94A0 /* EarthStation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EarthStation.swift; sourceTree = "<group>"; };
+		98AB62472245DBB6001E94A0 /* TwoLineElementSet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwoLineElementSet.swift; sourceTree = "<group>"; };
+		98AB62482245DBB6001E94A0 /* JulianMath.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JulianMath.swift; sourceTree = "<group>"; };
+		98AB624F2245DF7F001E94A0 /* Iridium.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Iridium.txt; sourceTree = "<group>"; };
 		98C39F0B22456227005D10AD /* Satellite.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; name = Satellite.metal; path = PlaygroundBook/PrivateResources/Satellite.metal; sourceTree = SOURCE_ROOT; };
 		98D7288922455A2000D01DF3 /* 2k_earth_specular_map.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = 2k_earth_specular_map.tiff; sourceTree = "<group>"; };
 		98D7288A22455A2100D01DF3 /* 2k_earth_normal_map.tiff */ = {isa = PBXFileReference; lastKnownFileType = image.tiff; path = 2k_earth_normal_map.tiff; sourceTree = "<group>"; };
@@ -263,6 +279,8 @@
 			isa = PBXGroup;
 			children = (
 				989A23F522449FC0005857DF /* 8k_earth_daymap.jpg */,
+				98AB624F2245DF7F001E94A0 /* Iridium.txt */,
+				98082A952245F590003B5A94 /* full.txt */,
 				98D7288B22455A2100D01DF3 /* 2k_earth_nightmap.jpg */,
 				98C39F0B22456227005D10AD /* Satellite.metal */,
 				98D7288A22455A2100D01DF3 /* 2k_earth_normal_map.tiff */,
@@ -276,6 +294,7 @@
 		5EF2F9A22054BB3E00191409 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				98AB62422245DB97001E94A0 /* ZeitSatTrackLib */,
 				5EF2F9AD2054BBF300191409 /* LiveViewController.swift */,
 				5E3196F22061DEA40077BBD7 /* LiveViewSupport.swift */,
 			);
@@ -295,6 +314,19 @@
 			children = (
 			);
 			path = Shaders;
+			sourceTree = "<group>";
+		};
+		98AB62422245DB97001E94A0 /* ZeitSatTrackLib */ = {
+			isa = PBXGroup;
+			children = (
+				98AB62442245DBB6001E94A0 /* CelestialBody.swift */,
+				98AB62462245DBB6001E94A0 /* EarthStation.swift */,
+				98AB62482245DBB6001E94A0 /* JulianMath.swift */,
+				98AB62432245DBB5001E94A0 /* Satellite.swift */,
+				98AB62472245DBB6001E94A0 /* TwoLineElementSet.swift */,
+				98AB62452245DBB6001E94A0 /* ZeitSatTrackManager.swift */,
+			);
+			path = ZeitSatTrackLib;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -407,8 +439,10 @@
 				98D7289022455C4600D01DF3 /* 2k_stars_milky_way.jpg in Resources */,
 				98D7288E22455A2100D01DF3 /* 2k_earth_nightmap.jpg in Resources */,
 				986897142245D87600D9902E /* Satellite.metal in Resources */,
+				98AB62502245DF7F001E94A0 /* Iridium.txt in Resources */,
 				989A23F622449FC1005857DF /* 8k_earth_daymap.jpg in Resources */,
 				5EF2F97C2054B6E400191409 /* ManifestPlist.strings in Resources */,
+				98082A962245F591003B5A94 /* full.txt in Resources */,
 				98D7288C22455A2100D01DF3 /* 2k_earth_specular_map.tiff in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -456,8 +490,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				98AB624E2245DBB6001E94A0 /* JulianMath.swift in Sources */,
+				98AB624D2245DBB6001E94A0 /* TwoLineElementSet.swift in Sources */,
+				98AB624B2245DBB6001E94A0 /* ZeitSatTrackManager.swift in Sources */,
 				5E3196F32061DEA40077BBD7 /* LiveViewSupport.swift in Sources */,
 				5EF2F9AE2054BBF300191409 /* LiveViewController.swift in Sources */,
+				98AB624A2245DBB6001E94A0 /* CelestialBody.swift in Sources */,
+				98AB62492245DBB6001E94A0 /* Satellite.swift in Sources */,
+				98AB624C2245DBB6001E94A0 /* EarthStation.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -36,11 +36,8 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
     public var earthNode: SCNNode!
     public var sceneView: SCNView!
     public var scene: SCNScene!
-    public var camera: SCNCamera!
     public var light: SCNLight!
     public var lightNode: SCNNode!
-    
-    public var cloudNode: SCNNode!
 
     public override func loadView() {
         let view = SCNView()
@@ -67,8 +64,6 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
         earthNode.eulerAngles = SCNVector3(0, 0, -0.4)
         scene.rootNode.addChildNode(earthNode)
         
-        self.camera = SCNCamera()
-        
         self.sceneView.scene = scene
         self.sceneView.allowsCameraControl = true
         
@@ -83,7 +78,8 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
         self.scene.background.contents = UIImage(named: "2k_stars_milky_way.jpg")
         
         self.startAnimate()
-        self.compileShaders()
+        
+        self.loadSats()
     }
     
     public func startAnimate() {
@@ -105,18 +101,15 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
         return nil
     }
     
-    public func compileShaders() {
+    public func compileShaders(vertices: [SCNVector3]) {
         let program = SCNProgram()
         program.fragmentFunctionName = "dot_fragment"
         program.vertexFunctionName = "dot_vertex"
         program.library = self.getShaders()
         
-        let testgeo = SCNGeometry(sources: [SCNGeometrySource(vertices: [
-            SCNVector3(x: 0, y: 2, z: 0),
-            SCNVector3(x: 0, y: 0, z: -2),
-            SCNVector3(x: 2, y: 0, z: 0)
-            ])], elements:
-            [SCNGeometryElement(indices: [1, 0, 2], primitiveType: SCNGeometryPrimitiveType.point)]
+        let indices: [UInt32] = [UInt32](0 ..< UInt32(vertices.count))
+        let testgeo = SCNGeometry(sources: [SCNGeometrySource(vertices: vertices)], elements:
+            [SCNGeometryElement(indices: indices, primitiveType: .point)]
         )
         let material = SCNMaterial()
         material.program = program
@@ -126,6 +119,28 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
 
         let testnode = SCNNode(geometry: testgeo)
         self.scene.rootNode.addChildNode(testnode)
-        self.scene.rootNode.addChildNode(testnode)
+    }
+    
+    let satelliteManager = ZeitSatTrackManager.sharedInstance
+    
+    public func loadSats () {
+        
+        guard let url = Bundle.main.url(forResource: "full", withExtension: "txt"),
+            let tle = try? String(contentsOf: url) else {
+            return
+        }
+        satelliteManager.addSatellitesFromTLEData(tleString: tle)
+        let locations = satelliteManager.locationsForSatellites()
+        let coords = locations.map { (name, location) -> SCNVector3 in
+            let r = location.altitude / 6378.0 + 1
+            let latitude = Double.pi * (location.latitude / 180)
+            let longitude = Double.pi * (location.longitude / 180)
+            let latCos = cos(latitude)
+            let x = r * latCos * cos(longitude)
+            let y = r * latCos * sin(longitude)
+            let z = r * sin(latitude)
+            return SCNVector3(x, y, z)
+        }
+        compileShaders(vertices: coords)
     }
 }
