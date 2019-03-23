@@ -119,6 +119,57 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
 
         let testnode = SCNNode(geometry: testgeo)
         self.scene.rootNode.addChildNode(testnode)
+        
+        program.handleBinding(ofBufferNamed: "orbitally_frame", frequency: .perFrame) { (stream, node, shadable, renderer) in
+            
+            let fov: simd_float1
+            if #available(iOS 11.0, *) {
+                fov = Float(renderer.pointOfView?.camera?.fieldOfView ?? 1)
+            } else {
+                fov = Float(renderer.pointOfView?.camera?.xFov ?? 1)
+            }
+            
+            let currentDate = JulianMath.secondsSinceReferenceDate(Date())
+            let currentJulianDate = JulianMath.julianDateFromSecondsSinceReferenceDate(secondsSinceReferenceDate: currentDate)
+
+            var data: [simd_float1] = [
+                fov,
+                simd_float1(currentJulianDate)
+            ]
+            let count = MemoryLayout<simd_float1>.stride
+            stream.writeBytes(&data, count: count)
+        }
+    }
+    
+    public func loadOrbits(satellite: Satellite) {
+        let currentDate = JulianMath.secondsSinceReferenceDate(Date())
+        let currentJulianDate = JulianMath.julianDateFromSecondsSinceReferenceDate(secondsSinceReferenceDate: currentDate)
+        
+        let range:Range<UInt8> = 0..<45
+        let vertices = range.map{
+            (degree: UInt8)  -> SCNVector3 in
+            let anomaly: Double = Double(degree) * 8.0
+            let pos = satellite.satelliteCartesianPosition(eccentricAnomaly: anomaly, julianDate: currentJulianDate)
+            return SCNVector3(x: Float(pos.x) / 6378.0, y: Float(pos.y) / 6378.0, z: Float(pos.z) / 6378.0)
+        }
+        
+        
+        var indices: [UInt32] = (0 ..< UInt32(vertices.count) * 2).map{
+            index in
+            return (index + 1) / 2
+        }
+        indices[indices.count-1] = 0
+        let testgeo = SCNGeometry(sources: [SCNGeometrySource(vertices: vertices)], elements:
+            [SCNGeometryElement(indices: indices, primitiveType: .line)]
+        )
+        let material = SCNMaterial()
+        material.emission.contents = UIColor.white
+        
+        testgeo.firstMaterial = material
+        
+        let testnode = SCNNode(geometry: testgeo)
+        self.scene.rootNode.addChildNode(testnode)
+        
     }
     
     let satelliteManager = ZeitSatTrackManager.sharedInstance
@@ -129,17 +180,10 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
             return
         }
         satelliteManager.addSatellitesFromTLEData(tleString: tle)
-        let locations = satelliteManager.locationsForSatellites()
-        let coords = locations.map { (name, location) -> SCNVector3 in
-            let r = location.altitude / 6370.0
-            let latitude = Double.pi * (location.latitude / 180)
-            let longitude = Double.pi * (location.longitude / 180)
-            let latCos = cos(latitude)
-            let x = r * latCos * cos(longitude)
-            let y = r * latCos * sin(longitude)
-            let z = r * sin(latitude)
-            return SCNVector3(x, y, z)
+        let coords = satelliteManager.cartesianLocationsForSatellites()
+        compileShaders(vertices: Array(coords.values))
+        for sat in satelliteManager.satellites {
+            loadOrbits(satellite: sat)
         }
-        compileShaders(vertices: coords)
     }
 }

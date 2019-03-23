@@ -8,6 +8,7 @@
 
 import CoreLocation
 import Foundation
+import SceneKit
 
 extension URLSession {
     func synchronousDataTask(with url: URL) -> (Data?, URLResponse?, Error?) {
@@ -275,6 +276,19 @@ open class ZeitSatTrackManager: NSObject, CLLocationManagerDelegate {
         self.satellites.forEach { (satellite) in
             let position = satellite.satellitePositionAt(date: date == nil ? Date() : date!)
             allSatPositions[satellite.name] = position!
+        }
+        return allSatPositions
+    }
+    
+    open func cartesianLocationsForSatellites(date: Date? = nil) -> [String: SCNVector3] {
+        let date = date ?? Date()
+        let currentDate = JulianMath.secondsSinceReferenceDate(date)
+        let currentJulianDate = JulianMath.julianDateFromSecondsSinceReferenceDate(secondsSinceReferenceDate: currentDate)
+        var allSatPositions = Dictionary<String, SCNVector3>()
+        
+        self.satellites.forEach { (satellite) in
+            let position = satellite.satelliteCartesianPositionAt(date: currentJulianDate)
+            allSatPositions[satellite.name] = position
         }
         return allSatPositions
     }

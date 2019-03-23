@@ -22,6 +22,10 @@
 		98082A962245F591003B5A94 /* full.txt in Resources */ = {isa = PBXBuildFile; fileRef = 98082A952245F590003B5A94 /* full.txt */; };
 		986897132245D6FF00D9902E /* Satellite.metal in Sources */ = {isa = PBXBuildFile; fileRef = 98C39F0B22456227005D10AD /* Satellite.metal */; };
 		986897142245D87600D9902E /* Satellite.metal in Resources */ = {isa = PBXBuildFile; fileRef = 98C39F0B22456227005D10AD /* Satellite.metal */; };
+		9891A8282246B7B1001E0D26 /* heo.txt in Resources */ = {isa = PBXBuildFile; fileRef = 9891A8242246B7AD001E0D26 /* heo.txt */; };
+		9891A8292246B7B1001E0D26 /* meo.txt in Resources */ = {isa = PBXBuildFile; fileRef = 9891A8252246B7AF001E0D26 /* meo.txt */; };
+		9891A82A2246B7B1001E0D26 /* geo.txt in Resources */ = {isa = PBXBuildFile; fileRef = 9891A8262246B7AF001E0D26 /* geo.txt */; };
+		9891A82B2246B7B1001E0D26 /* leo.txt in Resources */ = {isa = PBXBuildFile; fileRef = 9891A8272246B7B1001E0D26 /* leo.txt */; };
 		989A23F622449FC1005857DF /* 8k_earth_daymap.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 989A23F522449FC0005857DF /* 8k_earth_daymap.jpg */; };
 		98AB62492245DBB6001E94A0 /* Satellite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98AB62432245DBB5001E94A0 /* Satellite.swift */; };
 		98AB624A2245DBB6001E94A0 /* CelestialBody.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98AB62442245DBB6001E94A0 /* CelestialBody.swift */; };
@@ -134,6 +138,10 @@
 		5EF2F9AD2054BBF300191409 /* LiveViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveViewController.swift; sourceTree = "<group>"; };
 		5EF2F9B62054E6F900191409 /* Chapters */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Chapters; sourceTree = "<group>"; };
 		98082A952245F590003B5A94 /* full.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = full.txt; sourceTree = "<group>"; };
+		9891A8242246B7AD001E0D26 /* heo.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = heo.txt; sourceTree = "<group>"; };
+		9891A8252246B7AF001E0D26 /* meo.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = meo.txt; sourceTree = "<group>"; };
+		9891A8262246B7AF001E0D26 /* geo.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = geo.txt; sourceTree = "<group>"; };
+		9891A8272246B7B1001E0D26 /* leo.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = leo.txt; sourceTree = "<group>"; };
 		989A23F522449FC0005857DF /* 8k_earth_daymap.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 8k_earth_daymap.jpg; sourceTree = "<group>"; };
 		98AB62432245DBB5001E94A0 /* Satellite.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Satellite.swift; sourceTree = "<group>"; };
 		98AB62442245DBB6001E94A0 /* CelestialBody.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CelestialBody.swift; sourceTree = "<group>"; };
@@ -280,6 +288,10 @@
 			children = (
 				989A23F522449FC0005857DF /* 8k_earth_daymap.jpg */,
 				98AB624F2245DF7F001E94A0 /* Iridium.txt */,
+				9891A8262246B7AF001E0D26 /* geo.txt */,
+				9891A8242246B7AD001E0D26 /* heo.txt */,
+				9891A8272246B7B1001E0D26 /* leo.txt */,
+				9891A8252246B7AF001E0D26 /* meo.txt */,
 				98082A952245F590003B5A94 /* full.txt */,
 				98D7288B22455A2100D01DF3 /* 2k_earth_nightmap.jpg */,
 				98C39F0B22456227005D10AD /* Satellite.metal */,
@@ -435,13 +447,17 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9891A82A2246B7B1001E0D26 /* geo.txt in Resources */,
 				98D7288D22455A2100D01DF3 /* 2k_earth_normal_map.tiff in Resources */,
 				98D7289022455C4600D01DF3 /* 2k_stars_milky_way.jpg in Resources */,
 				98D7288E22455A2100D01DF3 /* 2k_earth_nightmap.jpg in Resources */,
+				9891A8292246B7B1001E0D26 /* meo.txt in Resources */,
+				9891A8282246B7B1001E0D26 /* heo.txt in Resources */,
 				986897142245D87600D9902E /* Satellite.metal in Resources */,
 				98AB62502245DF7F001E94A0 /* Iridium.txt in Resources */,
 				989A23F622449FC1005857DF /* 8k_earth_daymap.jpg in Resources */,
 				5EF2F97C2054B6E400191409 /* ManifestPlist.strings in Resources */,
+				9891A82B2246B7B1001E0D26 /* leo.txt in Resources */,
 				98082A962245F591003B5A94 /* full.txt in Resources */,
 				98D7288C22455A2100D01DF3 /* 2k_earth_specular_map.tiff in Resources */,
 			);

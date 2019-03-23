@@ -19,28 +19,27 @@ struct VertexOut {
     float point_size [[point_size]];
 };
 
-struct NodeBuffer {
-    float4x4 modelTransform;
-    float4x4 modelViewTransform;
-    float4x4 modelViewProjectionTransform;
-};
-
 struct FragmentIn {
     float4 position [[position]];
     float2 point_coord [[point_coord]];
 };
 
+struct OrbitallyFrame {
+    float fov;
+    float julian_date;
+};
+
 vertex VertexOut dot_vertex(VertexIn in [[ stage_in ]],
                             constant SCNSceneBuffer& scn_frame[[buffer(0)]],
-                            constant NodeBuffer & scn_node[[buffer(1)]])
+                            constant OrbitallyFrame & orbitally_frame[[buffer(2)]])
 {
     VertexOut out;
     out.position = scn_frame.viewProjectionTransform * float4(in.position, 1.0);
     
-    float fov = abs(atan(scn_frame.projectionTransform[2][2] / scn_frame.projectionTransform[1][1]));
-    out.point_size = 2.0 / fov;
+    //float fov = abs(atan(scn_frame.projectionTransform[2][2] / scn_frame.projectionTransform[1][1]));
+    out.point_size = 350 / orbitally_frame.fov;
     out.point_size = min(out.point_size, 20.0);
-    out.point_size = max(out.point_size, 5.0);
+    out.point_size = max(out.point_size, 8.0);
     return out;
 }
 
