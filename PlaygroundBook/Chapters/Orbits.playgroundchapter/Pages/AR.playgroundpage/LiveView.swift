@@ -1,4 +1,4 @@
 import PlaygroundSupport
 
-let view = instantiateARLiveView("full")
+let view = instantiateARLiveView("geo")
 PlaygroundPage.current.liveView = view
