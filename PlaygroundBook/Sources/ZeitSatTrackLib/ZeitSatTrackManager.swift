@@ -546,7 +546,6 @@ open class ZeitSatTrackManager: NSObject, CLLocationManagerDelegate {
             let satName = responseArray[ i * 3].trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
             let lineOne = responseArray[1 + i * 3]
             let lineTwo = responseArray[2 + i * 3]
-            
             if satName.lengthOfBytes(using: .utf8) > 0  && alreadyExists(name: satName) == false {
                 //print("\(satName)")
                 let twoLineElementSet = TwoLineElementSet(nameOfSatellite: satName, lineOne: lineOne, lineTwo: lineTwo)
@@ -555,7 +554,4 @@ open class ZeitSatTrackManager: NSObject, CLLocationManagerDelegate {
             } //of name length & duplication check
         } // of TLE processing loop
     }
-    
-    
-    
 }

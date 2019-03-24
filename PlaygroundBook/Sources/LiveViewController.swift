@@ -83,9 +83,10 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
     }
     
     public func startAnimate() {
+        let twoPi = CGFloat.pi * 2.0
         earthNode.runAction(
             SCNAction.repeatForever(
-                SCNAction.rotateBy(x: 0, y: 0.4, z: 0, duration: 1)))
+                SCNAction.rotateBy(x: 0, y: (twoPi / 86400.0) * CGFloat(self.accelerate), z: 0, duration: 1)))
         lightNode.runAction(
             SCNAction.repeatForever(
                 SCNAction.rotateBy(x: 0, y: 0.1, z: 0, duration: 1)))
@@ -160,11 +161,13 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
             var data: [simd_float1] = [
                 fov,
                 simd_float1(rotationFromGeocentric),
+                86400.0 / self.accelerate
             ]
             let count = MemoryLayout<simd_float1>.stride * data.count
             stream.writeBytes(&data, count: count)
         }
     }
+    public var accelerate: Float = 1000
     
     public func loadOrbits(satellite: Satellite) {
         let currentDate = JulianMath.secondsSinceReferenceDate(Date())
@@ -200,7 +203,7 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
     let satelliteManager = ZeitSatTrackManager.sharedInstance
     
     public func loadSats () {
-        guard let url = Bundle.main.url(forResource: "full", withExtension: "txt"),
+        guard let url = Bundle.main.url(forResource: "Iridium", withExtension: "txt"),
             let tle = try? String(contentsOf: url) else {
             return
         }
@@ -222,10 +225,13 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
             )
         }
         compileShaders(tles)
-        /**for sat in satelliteManager.satellites {
-            loadOrbits(satellite: sat)
-        }**/
+        if alwaysShowOrbits {
+            for sat in satelliteManager.satellites {
+             loadOrbits(satellite: sat)
+            }
+        }
     }
+    public let alwaysShowOrbits = false
     struct TLE {
         var meanAnomaly: Float
         var semimajorAxis: Float

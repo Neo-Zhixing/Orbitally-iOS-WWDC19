@@ -231,7 +231,6 @@
 				5E2A7AE3204F628B00F4E17A /* Config Files */,
 				5E1004BD208E7F6E00BCFE70 /* LICENSE */,
 				5EA2E3D52056F83400416A35 /* Supporting Content */,
-				985D63ED2245D0F8002A22E2 /* Shaders */,
 				5E086DA4204F706E004D8D25 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -321,13 +320,6 @@
 			name = "Supporting Content";
 			sourceTree = "<group>";
 		};
-		985D63ED2245D0F8002A22E2 /* Shaders */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Shaders;
-			sourceTree = "<group>";
-		};
 		98AB62422245DB97001E94A0 /* ZeitSatTrackLib */ = {
 			isa = PBXGroup;
 			children = (
@@ -411,6 +403,7 @@
 				TargetAttributes = {
 					5E086DBF2051C5A7004D8D25 = {
 						CreatedOnToolsVersion = 9.3;
+						LastSwiftMigration = 1010;
 					};
 					5EA2E3BC2056F35A00416A35 = {
 						CreatedOnToolsVersion = 9.3;
@@ -561,6 +554,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5E086DC72051DD03004D8D25 /* BookOverridingBuildSettings.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1.0;
@@ -568,9 +562,16 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				INSTALL_PATH = /;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "$(PLAYGROUND_BOOK_CONTENT_IDENTIFIER)";
 				PRODUCT_NAME = "$(PLAYGROUND_BOOK_FILE_NAME)";
 				SKIP_INSTALL = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 4.2;
 			};
 			name = Debug;
 		};
@@ -578,15 +579,22 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 5E086DC72051DD03004D8D25 /* BookOverridingBuildSettings.xcconfig */;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1.0;
 				DEVELOPMENT_TEAM = NPH2W8S7QJ;
 				INSTALL_PATH = /;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "$(PLAYGROUND_BOOK_CONTENT_IDENTIFIER)";
 				PRODUCT_NAME = "$(PLAYGROUND_BOOK_FILE_NAME)";
 				SKIP_INSTALL = NO;
+				SWIFT_VERSION = 4.2;
 			};
 			name = Release;
 		};
