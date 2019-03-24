@@ -3,11 +3,10 @@
 <plist version="1.0">
 <dict>
 	<key>Name</key>
-	<string>Orbit 101: Introduction</string>
-	<key>Pages</key>
-	<array>
-		<string>Earth.playgroundpage</string>
-		<string>Satellite.playgroundpage</string>
-	</array>
+	<string>Satellites</string>
+	<key>LiveViewEdgeToEdge</key>
+	<true/>
+	<key>LiveViewMode</key>
+	<string>VisibleByDefault</string>
 </dict>
 </plist>

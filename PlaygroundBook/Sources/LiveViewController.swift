@@ -51,6 +51,28 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
             self.accelerate = Float(accelerate)
             self.startAnimate()
         }
+        if case let .some(.dictionary(tle)) = dict["tle"],
+            case let .some(.floatingPoint(meanAnomaly)) = tle["meanAnomaly"],
+            case let .some(.floatingPoint(semimajorAxis)) = tle["semimajorAxis"],
+            case let .some(.floatingPoint(eccentricity)) = tle["eccentricity"],
+            case let .some(.floatingPoint(inclination)) = tle["inclination"],
+            case let .some(.floatingPoint(argumentOfPerigee)) = tle["argumentOfPerigee"],
+            case let .some(.floatingPoint(rightAscensionOfTheAscendingNode)) = tle["rightAscensionOfTheAscendingNode"],
+            case let .some(.floatingPoint(epoch)) = tle["epoch"],
+            case let .some(.floatingPoint(meanMotion)) = tle["meanMotion"]{
+            let tle = TLE(meanAnomaly: Float(meanAnomaly),
+                          semimajorAxis: Float(semimajorAxis),
+                          eccentricity: Float(eccentricity),
+                          inclination: Float(inclination),
+                          argumentOfPerigee: Float(argumentOfPerigee),
+                          rightAscensionOfTheAscendingNode: Float(rightAscensionOfTheAscendingNode),
+                          epoch: Float(epoch),
+                          meanMotion: Float(meanMotion))
+            self.loadSatGeometry([tle])
+            self.satelliteManager.satellites.removeAll()
+            let sat = Satellite()
+            sat.
+        }
         if case let .some(.boolean(trace)) = dict["trace"] {
             if (trace != self.alwaysShowOrbits) {
                 self.alwaysShowOrbits = trace
@@ -285,6 +307,7 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
                 meanMotion: Float(tle.meanMotion)
             )
         }
+        print(tles)
         loadSatGeometry(tles)
         if alwaysShowOrbits {
             loadOrbits()
@@ -292,13 +315,13 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
     }
     public var alwaysShowOrbits = false
     public struct TLE {
-        var meanAnomaly: Float
-        var semimajorAxis: Float
-        var eccentricity: Float
-        var inclination: Float
-        var argumentOfPerigee: Float
-        var rightAscensionOfTheAscendingNode: Float
-        var epoch: Float;
-        var meanMotion: Float;
+        public var meanAnomaly: Float
+        public var semimajorAxis: Float
+        public var eccentricity: Float
+        public var inclination: Float
+        public var argumentOfPerigee: Float
+        public var rightAscensionOfTheAscendingNode: Float
+        public var epoch: Float;
+        public var meanMotion: Float;
     }
 }
