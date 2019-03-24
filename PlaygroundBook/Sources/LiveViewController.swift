@@ -8,6 +8,7 @@
 
 import UIKit
 import PlaygroundSupport
+import AVKit
 import SceneKit
 
 @available(iOS 11.0, *)
@@ -106,7 +107,18 @@ public class LiveViewController: UIViewController, SCNSceneRendererDelegate, Pla
         self.sceneView.scene = scene
         self.sceneView.delegate = self
     }
+    var audioplayer: AVAudioPlayer?
     public override func viewDidLoad() {
+        if let soundURL = Bundle.main.url(forResource: "bgm", withExtension: "aac") {
+            print(soundURL)
+            let beepPlayer = try? AVAudioPlayer(contentsOf: soundURL)
+            print(beepPlayer)
+            beepPlayer?.prepareToPlay()
+            beepPlayer?.play()
+            self.audioplayer = beepPlayer
+        }
+
+    
         let earthGeometry = SCNSphere(radius: 1.0)
         earthGeometry.segmentCount = 96
         let earthMaterial = SCNMaterial()
@@ -117,9 +129,6 @@ public class LiveViewController: UIViewController, SCNSceneRendererDelegate, Pla
         earthGeometry.insertMaterial(earthMaterial, at: 0)
         
         earthNode = SCNNode(geometry: earthGeometry)
-        if let audiosource = SCNAudioSource(fileNamed: "bgm.aac") {
-            earthNode.addAudioPlayer(SCNAudioPlayer(source: audiosource))
-        }
         
         scene.rootNode.addChildNode(earthNode)
         
@@ -257,6 +266,9 @@ public class LiveViewController: UIViewController, SCNSceneRendererDelegate, Pla
             let node = SCNNode()
             self.scene.rootNode.addChildNode(node)
             self.orbitNode = node
+        }
+        if (!self.alwaysShowOrbits) {
+            return
         }
         let orbitNode = self.orbitNode!
         let currentDate = JulianMath.secondsSinceReferenceDate(Date())

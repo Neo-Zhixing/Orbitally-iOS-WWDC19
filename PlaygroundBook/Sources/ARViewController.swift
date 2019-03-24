@@ -22,9 +22,9 @@ public class ARViewController: LiveViewController {
     
     public override func viewDidLoad() {
         super.viewDidLoad()
-        self.earthNode.position = SCNVector3(0, 0, -3)
-        self.satNode?.position = SCNVector3(0, 0, -3)
-        self.orbitNode?.position = SCNVector3(0, 0, -3)
+        self.earthNode.position = SCNVector3(0, 0, 0)
+        self.satNode?.position = SCNVector3(0, 0, 0)
+        self.orbitNode?.position = SCNVector3(0, 0, 0)
         self.scene.background.contents = nil
         self.sceneView.allowsCameraControl = false
         
