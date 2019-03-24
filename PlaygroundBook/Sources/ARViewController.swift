@@ -23,7 +23,7 @@ public class ARViewController: LiveViewController {
     
     public override func viewDidLoad() {
         self.dotSize = 10.0
-        self.alwaysShowOrbits = true
+        self.alwaysShowOrbits = false
         self.accelerate = 100
         super.viewDidLoad()
         self.earthNode.position = SCNVector3(0, 0, 0)

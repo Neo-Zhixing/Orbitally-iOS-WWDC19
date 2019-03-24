@@ -3,5 +3,6 @@ import PlaygroundSupport
 let view = instantiateLiveView("Iridium")
 view.accelerate = 100
 view.alwaysShowOrbits = true
-view.dotSize = 5.0
+view.initialCameraPosition = 2.0
+view.dotSize = 3.0
 PlaygroundPage.current.liveView = view
