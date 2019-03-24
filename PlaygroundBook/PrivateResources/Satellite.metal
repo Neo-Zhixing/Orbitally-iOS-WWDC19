@@ -10,6 +10,8 @@ using namespace metal;
 
 #include <SceneKit/scn_metal>
 
+constant float EARTH_R = 6378.0;
+
 struct TLE {
     float meanAnomaly;
     float semimajorAxis;
@@ -160,7 +162,7 @@ vertex VertexOut dot_vertex(VertexIn in [[ stage_in ]],
     
     //float3 position = in.position;
     float3 position = calc(tle, orbitally_frame.rotationFromGeocentric, scn_frame.time / orbitally_frame.time_constant);
-    position = float3(position.y, position.z, position.x);
+    position = float3(position.y/EARTH_R, position.z/EARTH_R, position.x/EARTH_R);
     VertexOut out;
     out.position = scn_frame.viewProjectionTransform * float4(position, 1.0);
     

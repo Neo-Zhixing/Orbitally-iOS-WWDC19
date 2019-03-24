@@ -10,8 +10,9 @@ import UIKit
 import PlaygroundSupport
 import SceneKit
 
+@available(iOS 11.0, *)
 @objc(Book_Sources_LiveViewController)
-public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHandler, PlaygroundLiveViewSafeAreaContainer {
+public class LiveViewController: UIViewController, SCNSceneRendererDelegate, PlaygroundLiveViewMessageHandler, PlaygroundLiveViewSafeAreaContainer {
     /*
     public func liveViewMessageConnectionOpened() {
         // Implement this method to be notified when the live view message connection is opened.
@@ -99,17 +100,14 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
 
     public override func loadView() {
         let view = SCNView()
-        if #available(iOS 11.0, *) {
-            //view.debugOptions = [.showWireframe]
-        }
         self.view = view
         self.sceneView = view
+        scene = SCNScene()
+        self.sceneView.scene = scene
+        self.sceneView.delegate = self
     }
     public override func viewDidLoad() {
-        scene = SCNScene()
-        
-        
-        let earthGeometry = SCNSphere(radius: 6378.0)
+        let earthGeometry = SCNSphere(radius: 1.0)
         earthGeometry.segmentCount = 96
         let earthMaterial = SCNMaterial()
         earthMaterial.diffuse.contents = UIImage(named: "8k_earth_daymap.jpg")
@@ -119,9 +117,12 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
         earthGeometry.insertMaterial(earthMaterial, at: 0)
         
         earthNode = SCNNode(geometry: earthGeometry)
+        if let audiosource = SCNAudioSource(fileNamed: "bgm.aac") {
+            earthNode.addAudioPlayer(SCNAudioPlayer(source: audiosource))
+        }
+        
         scene.rootNode.addChildNode(earthNode)
         
-        self.sceneView.scene = scene
         self.sceneView.allowsCameraControl = true
         
         //self.sceneView.backgroundColor = UIColor.black
@@ -137,7 +138,14 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
         
         self.startAnimate()
         
-        self.loadSats()
+        //self.loadSats()
+    }
+    public var rendered = false
+    public func renderer(_ renderer: SCNSceneRenderer, willRenderScene scene: SCNScene, atTime time: TimeInterval) {
+        if !rendered {
+            rendered = true
+            self.loadSats()
+        }
     }
     
     public func startAnimate() {
@@ -145,7 +153,7 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
         earthNode.runAction(
             SCNAction.repeatForever(
                 SCNAction.rotateBy(x: 0, y: (twoPi / 86400.0) * CGFloat(self.accelerate), z: 0, duration: 1)))
-        lightNode.runAction(
+        lightNode?.runAction(
             SCNAction.repeatForever(
                 SCNAction.rotateBy(x: 0, y: 0.1, z: 0, duration: 1)))
     }
@@ -171,12 +179,7 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
         
         
         program.handleBinding(ofBufferNamed: "orbitally_frame", frequency: .perFrame) { (stream, node, shadable, renderer) in
-            let fov: simd_float1
-            if #available(iOS 11.0, *) {
-                fov = Float(renderer.pointOfView?.camera?.fieldOfView ?? 1)
-            } else {
-                fov = Float(renderer.pointOfView?.camera?.xFov ?? 1)
-            }
+            let fov = simd_float1(renderer.pointOfView?.camera?.fieldOfView ?? 1)
             
             let currentDate = JulianMath.secondsSinceReferenceDate(Date())
             let currentJulianDate = JulianMath.julianDateFromSecondsSinceReferenceDate(secondsSinceReferenceDate: currentDate)
@@ -266,12 +269,12 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
         
         var indices = [UInt32]()
         indices.reserveCapacity(self.satelliteManager.satellites.count * 45 * 2)
-
+        let earth_r: Float = 6378.0
         for (satIndex, sat) in tles.enumerated() {
             for dotIndex in range {
                 let anomaly: Float = Float(dotIndex) * 8.0
                 let pos = sat.cartesianPosition(eccentricAnomaly: anomaly, julianDate: currentJulianDate)
-                let vector = SCNVector3(x: Float(pos.x), y: Float(pos.y), z: Float(pos.z))
+                let vector = SCNVector3(x: Float(pos.x)/earth_r, y: Float(pos.y)/earth_r, z: Float(pos.z)/earth_r)
                 vertices.append(vector)
                 let firstIndex = UInt32(satIndex) * 45
                 let index: UInt32 = firstIndex + UInt32(dotIndex)
@@ -320,9 +323,7 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
         }
         self.tles = tles
         loadSatGeometry()
-        if alwaysShowOrbits {
-            loadOrbits()
-        }
+        loadOrbits()
     }
     public var alwaysShowOrbits = false
     public struct TLE {

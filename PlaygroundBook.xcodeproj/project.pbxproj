@@ -20,8 +20,10 @@
 		5EF2F9B72054E6FB00191409 /* Chapters in Copy Book Contents */ = {isa = PBXBuildFile; fileRef = 5EF2F9B62054E6F900191409 /* Chapters */; };
 		5EF2F9B82054E6FE00191409 /* Sources in Copy Book Contents */ = {isa = PBXBuildFile; fileRef = 5EF2F9A52054BBB200191409 /* Sources */; };
 		98082A962245F591003B5A94 /* full.txt in Resources */ = {isa = PBXBuildFile; fileRef = 98082A952245F590003B5A94 /* full.txt */; };
+		982ACF12224817A7008660F5 /* ARViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 982ACF11224817A7008660F5 /* ARViewController.swift */; };
 		986897132245D6FF00D9902E /* Satellite.metal in Sources */ = {isa = PBXBuildFile; fileRef = 98C39F0B22456227005D10AD /* Satellite.metal */; };
 		986897142245D87600D9902E /* Satellite.metal in Resources */ = {isa = PBXBuildFile; fileRef = 98C39F0B22456227005D10AD /* Satellite.metal */; };
+		98771B6C22482E4600EB3237 /* bgm.aac in Resources */ = {isa = PBXBuildFile; fileRef = 982ACF132248251B008660F5 /* bgm.aac */; };
 		9891A8282246B7B1001E0D26 /* heo.txt in Resources */ = {isa = PBXBuildFile; fileRef = 9891A8242246B7AD001E0D26 /* heo.txt */; };
 		9891A82A2246B7B1001E0D26 /* geo.txt in Resources */ = {isa = PBXBuildFile; fileRef = 9891A8262246B7AF001E0D26 /* geo.txt */; };
 		9891A82B2246B7B1001E0D26 /* leo.txt in Resources */ = {isa = PBXBuildFile; fileRef = 9891A8272246B7B1001E0D26 /* leo.txt */; };
@@ -135,6 +137,8 @@
 		5EF2F9AD2054BBF300191409 /* LiveViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveViewController.swift; sourceTree = "<group>"; };
 		5EF2F9B62054E6F900191409 /* Chapters */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Chapters; sourceTree = "<group>"; };
 		98082A952245F590003B5A94 /* full.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = full.txt; sourceTree = "<group>"; };
+		982ACF11224817A7008660F5 /* ARViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARViewController.swift; sourceTree = "<group>"; };
+		982ACF132248251B008660F5 /* bgm.aac */ = {isa = PBXFileReference; lastKnownFileType = file; path = bgm.aac; sourceTree = "<group>"; };
 		9891A8242246B7AD001E0D26 /* heo.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = heo.txt; sourceTree = "<group>"; };
 		9891A8262246B7AF001E0D26 /* geo.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = geo.txt; sourceTree = "<group>"; };
 		9891A8272246B7B1001E0D26 /* leo.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = leo.txt; sourceTree = "<group>"; };
@@ -282,6 +286,7 @@
 				989A23F522449FC0005857DF /* 8k_earth_daymap.jpg */,
 				98AB624F2245DF7F001E94A0 /* Iridium.txt */,
 				9891A8262246B7AF001E0D26 /* geo.txt */,
+				982ACF132248251B008660F5 /* bgm.aac */,
 				9891A8242246B7AD001E0D26 /* heo.txt */,
 				9891A8272246B7B1001E0D26 /* leo.txt */,
 				98082A952245F590003B5A94 /* full.txt */,
@@ -301,6 +306,7 @@
 				98AB62422245DB97001E94A0 /* ZeitSatTrackLib */,
 				5EF2F9AD2054BBF300191409 /* LiveViewController.swift */,
 				5E3196F22061DEA40077BBD7 /* LiveViewSupport.swift */,
+				982ACF11224817A7008660F5 /* ARViewController.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -438,6 +444,7 @@
 				9891A8282246B7B1001E0D26 /* heo.txt in Resources */,
 				986897142245D87600D9902E /* Satellite.metal in Resources */,
 				98AB62502245DF7F001E94A0 /* Iridium.txt in Resources */,
+				98771B6C22482E4600EB3237 /* bgm.aac in Resources */,
 				989A23F622449FC1005857DF /* 8k_earth_daymap.jpg in Resources */,
 				5EF2F97C2054B6E400191409 /* ManifestPlist.strings in Resources */,
 				9891A82B2246B7B1001E0D26 /* leo.txt in Resources */,
@@ -489,6 +496,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				982ACF12224817A7008660F5 /* ARViewController.swift in Sources */,
 				98AB624E2245DBB6001E94A0 /* JulianMath.swift in Sources */,
 				98AB624D2245DBB6001E94A0 /* TwoLineElementSet.swift in Sources */,
 				98AB624B2245DBB6001E94A0 /* ZeitSatTrackManager.swift in Sources */,
