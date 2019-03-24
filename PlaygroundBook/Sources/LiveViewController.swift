@@ -239,6 +239,7 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
             let node = SCNNode(geometry: testgeo)
             self.scene.rootNode.addChildNode(node)
             self.satNode = node
+            node.renderingOrder = 1000
         }
         
     }
