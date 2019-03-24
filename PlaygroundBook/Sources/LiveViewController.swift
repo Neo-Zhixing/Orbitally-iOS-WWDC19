@@ -61,7 +61,6 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
         earthGeometry.insertMaterial(earthMaterial, at: 0)
         
         earthNode = SCNNode(geometry: earthGeometry)
-        earthNode.eulerAngles = SCNVector3(0, 0, -0.4)
         scene.rootNode.addChildNode(earthNode)
         
         self.sceneView.scene = scene
@@ -72,6 +71,7 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
         self.light = SCNLight()
         lightNode = SCNNode()
         lightNode.light = self.light
+        lightNode.eulerAngles = SCNVector3(x: 0, y: 0, z: 0.4)
         self.scene.rootNode.addChildNode(lightNode)
         self.light.type = .directional
         

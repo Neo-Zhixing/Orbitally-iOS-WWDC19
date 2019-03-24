@@ -92,7 +92,7 @@ public class Satellite {
         let relativeX = cos(rotationFromGeocentricRad) * geocentricX - sin(rotationFromGeocentricRad) * geocentricY
         let relativeY = sin(rotationFromGeocentricRad) * geocentricX + cos(rotationFromGeocentricRad) * geocentricY
         let relativeZ = geocentricZ
-        return (x: relativeX, y: relativeY, z: relativeZ, r: currentOrbitalRadius)
+        return (x: relativeY, y: relativeZ, z: relativeX, r: currentOrbitalRadius)
     }
     func satelliteCartesianPositionAt(date: Double) -> SCNVector3 {
         let currentMeanAnomaly = self.twoLineElementSet!.meanAnomalyForJulianDate(julianDate: date)

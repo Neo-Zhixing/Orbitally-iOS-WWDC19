@@ -105,8 +105,15 @@ struct OrbitallyFrame {
     float rotationFromGeocentric;
 };
 
+struct NodeBuffer {
+    float4x4 modelTransform;
+    float4x4 modelViewProjectionTransform;
+};
+
+
 vertex VertexOut dot_vertex(VertexIn in [[ stage_in ]],
                             constant SCNSceneBuffer& scn_frame[[buffer(0)]],
+                            constant NodeBuffer& node_frame[[buffer(1)]],
                             constant OrbitallyFrame & orbitally_frame[[buffer(2)]])
 {
     TLE tle;
