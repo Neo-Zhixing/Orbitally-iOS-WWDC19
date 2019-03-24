@@ -69,9 +69,6 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
                           epoch: Float(epoch),
                           meanMotion: Float(meanMotion))
             self.loadSatGeometry([tle])
-            self.satelliteManager.satellites.removeAll()
-            let sat = Satellite()
-            sat.
         }
         if case let .some(.boolean(trace)) = dict["trace"] {
             if (trace != self.alwaysShowOrbits) {
@@ -179,7 +176,8 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
             var data: [simd_float1] = [
                 fov,
                 simd_float1(rotationFromGeocentric),
-                86400.0 / self.accelerate
+                86400.0 / self.accelerate,
+                self.dotSize
             ]
             let count = MemoryLayout<simd_float1>.stride * data.count
             stream.writeBytes(&data, count: count)
@@ -238,6 +236,7 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
     }
     
     public var accelerate: Float = 100
+    public var dotSize: Float = 1.0
     
     public var orbitNode: SCNNode?
     public func loadOrbits() {
@@ -307,7 +306,6 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
                 meanMotion: Float(tle.meanMotion)
             )
         }
-        print(tles)
         loadSatGeometry(tles)
         if alwaysShowOrbits {
             loadOrbits()

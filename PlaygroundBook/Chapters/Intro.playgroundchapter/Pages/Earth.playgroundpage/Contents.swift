@@ -10,10 +10,8 @@ let earthView = PlaygroundPage.current.liveView as? PlaygroundRemoteLiveViewProx
  The Earth is a globe.
  
  ### The Earth is not flat.
- ## The Earth is not flat.
- # The Earth is not flat.
  
- Take your time to appretrueciate this nice blue marble floating in space.
+ Take your time to appreciate this nice blue marble floating in space.
  
  This is not just a SCNSphere. It's a SCNSphere with diffuse, specular, selfIllumination and normal textures.
  

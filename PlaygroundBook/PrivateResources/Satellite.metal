@@ -134,6 +134,7 @@ struct OrbitallyFrame {
     float fov;
     float rotationFromGeocentric;
     float time_constant;
+    float dot_size;
 };
 
 struct NodeBuffer {
@@ -167,6 +168,7 @@ vertex VertexOut dot_vertex(VertexIn in [[ stage_in ]],
     out.point_size = 500 / orbitally_frame.fov;
     out.point_size = min(out.point_size, 20.0);
     out.point_size = max(out.point_size, 8.0);
+    out.point_size *= orbitally_frame.dot_size;
     return out;
 }
 
