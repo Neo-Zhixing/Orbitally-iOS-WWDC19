@@ -19,5 +19,5 @@ let earthView = PlaygroundPage.current.liveView as? PlaygroundRemoteLiveViewProx
  
  -------------
  
- When you're ready, turn to the next page to explore how objects around earth move.
+ When you're ready, turn to the next page to explore how objects move around the Earth.
 */

@@ -68,9 +68,18 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
                           rightAscensionOfTheAscendingNode: Float(rightAscensionOfTheAscendingNode),
                           epoch: Float(epoch),
                           meanMotion: Float(meanMotion))
-            self.loadSatGeometry([tle])
+            self.tles = [tle]
+            self.loadSatGeometry()
+            if case let .some(.boolean(trace)) = dict["trace"] {
+                self.alwaysShowOrbits = trace
+            }
+            if self.alwaysShowOrbits {
+                self.loadOrbits()
+            } else {
+                self.orbitNode?.geometry = nil
+            }
         }
-        if case let .some(.boolean(trace)) = dict["trace"] {
+        else if case let .some(.boolean(trace)) = dict["trace"] {
             if (trace != self.alwaysShowOrbits) {
                 self.alwaysShowOrbits = trace
                 if trace {
@@ -78,7 +87,6 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
                 } else {
                     self.orbitNode?.geometry = nil
                 }
-                
             }
         }
     }
@@ -185,7 +193,7 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
     }
     
     var satNode: SCNNode?
-    public func loadSatGeometry(_ tles: [TLE]) {
+    public func loadSatGeometry() {
         let indices: [UInt32] = [UInt32](0 ..< UInt32(tles.count))
         
         let data = Data(bytes: tles, count: tles.count * MemoryLayout<TLE>.size)
@@ -240,6 +248,7 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
     
     public var orbitNode: SCNNode?
     public func loadOrbits() {
+        // TODO: make tles optional. When it's none, grab info from self.
         if self.orbitNode == nil {
             let node = SCNNode()
             self.scene.rootNode.addChildNode(node)
@@ -257,10 +266,10 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
         var indices = [UInt32]()
         indices.reserveCapacity(self.satelliteManager.satellites.count * 45 * 2)
 
-        for (satIndex, sat) in self.satelliteManager.satellites.enumerated() {
+        for (satIndex, sat) in tles.enumerated() {
             for dotIndex in range {
-                let anomaly: Double = Double(dotIndex) * 8.0
-                let pos = sat.satelliteCartesianPosition(eccentricAnomaly: anomaly, julianDate: currentJulianDate)
+                let anomaly: Float = Float(dotIndex) * 8.0
+                let pos = sat.cartesianPosition(eccentricAnomaly: anomaly, julianDate: currentJulianDate)
                 let vector = SCNVector3(x: Float(pos.x), y: Float(pos.y), z: Float(pos.z))
                 vertices.append(vector)
                 let firstIndex = UInt32(satIndex) * 45
@@ -282,6 +291,8 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
     let satelliteManager = ZeitSatTrackManager.sharedInstance
     
     var filename: String?
+    
+    var tles: [TLE] = []
     
     public func loadSats () {
         guard let filename = self.filename,
@@ -306,7 +317,8 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
                 meanMotion: Float(tle.meanMotion)
             )
         }
-        loadSatGeometry(tles)
+        self.tles = tles
+        loadSatGeometry()
         if alwaysShowOrbits {
             loadOrbits()
         }
@@ -321,5 +333,54 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
         public var rightAscensionOfTheAscendingNode: Float
         public var epoch: Float;
         public var meanMotion: Float;
+        func trueAnomalyForEccentricAnomaly(eccentricAnomaly: Float) -> Float {
+            let halfEccentricAnomalyRad = (eccentricAnomaly * .pi / 180.0) / 2.0
+            return 2.0 * atan2(sqrt(1 + self.eccentricity) * sin(halfEccentricAnomalyRad), sqrt(1 - self.eccentricity) * cos(halfEccentricAnomalyRad)) * 180.0 / .pi
+        }
+        func cartesianPosition(eccentricAnomaly currentEccentricAnomaly: Float, julianDate: Double) -> SCNVector3 {
+            let currentTrueAnomaly = self.trueAnomalyForEccentricAnomaly(eccentricAnomaly: currentEccentricAnomaly)
+            let semimajorAxis: Float = self.semimajorAxis
+            
+            // Solve for r0 : the distance from the satellite to the Earth's center
+            let currentOrbitalRadius = semimajorAxis - (semimajorAxis * self.eccentricity) * cos(currentEccentricAnomaly * Float.pi / 180.0)
+            
+            // Solve for the x and y position in the orbital plane
+            let orbitalX = currentOrbitalRadius * cos(currentTrueAnomaly * .pi / 180.0)
+            let orbitalY = currentOrbitalRadius * sin(currentTrueAnomaly * .pi / 180.0)
+            
+            
+            // Rotation math  https://www.csun.edu/~hcmth017/master/node20.html
+            // First, rotate around the z''' axis by the Argument of Perigee: ⍵
+            let cosArgPerigee = cos(self.argumentOfPerigee * .pi / 180.0)
+            let sinArgPerigee = sin(self.argumentOfPerigee * .pi / 180.0)
+            let orbitalXbyPerigee = cosArgPerigee * orbitalX - sinArgPerigee * orbitalY
+            let orbitalYbyPerigee = sinArgPerigee * orbitalX + cosArgPerigee * orbitalY
+            let orbitalZbyPerigee: Float = 0.0
+            
+            // Next, rotate around the x'' axis by inclincation
+            let cosInclination = cos(self.inclination * .pi / 180.0)
+            
+            let sinInclination = sin(self.inclination * .pi / 180.0)
+            
+            let orbitalXbyInclination = orbitalXbyPerigee
+            
+            let orbitalYbyInclination = cosInclination * orbitalYbyPerigee - sinInclination * orbitalZbyPerigee
+            let orbitalZbyInclination = sinInclination * orbitalYbyPerigee + cosInclination * orbitalZbyPerigee
+            
+            // Lastly, rotate around the z' axis by RAAN: Ω
+            let cosRAAN = cos(self.rightAscensionOfTheAscendingNode * .pi / 180.0)
+            let sinRAAN = sin(self.rightAscensionOfTheAscendingNode * .pi / 180.0)
+            let geocentricX = cosRAAN * orbitalXbyInclination - sinRAAN * orbitalYbyInclination
+            let geocentricY = sinRAAN * orbitalXbyInclination + cosRAAN * orbitalYbyInclination
+            let geocentricZ = orbitalZbyInclination
+            
+            // And then around the z axis by the earth's own rotaton
+            let rotationFromGeocentric = Float(JulianMath.rotationFromGeocentricforJulianDate(julianDate: julianDate))
+            let rotationFromGeocentricRad = -rotationFromGeocentric * .pi / 180.0
+            let relativeX = cos(rotationFromGeocentricRad) * geocentricX - sin(rotationFromGeocentricRad) * geocentricY
+            let relativeY = sin(rotationFromGeocentricRad) * geocentricX + cos(rotationFromGeocentricRad) * geocentricY
+            let relativeZ = geocentricZ
+            return SCNVector3(x: relativeY, y: relativeZ, z: relativeX)
+        }
     }
 }
