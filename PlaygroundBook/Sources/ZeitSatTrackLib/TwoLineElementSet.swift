@@ -71,7 +71,7 @@ class TwoLineElementSet {
         let launchYearStringOffset = 9
         let launchYearStringLength = (launchYearStringOffset + 2) - 1
         let launchYearString = lineOne[launchYearStringOffset..<launchYearStringLength]
-        self.launchYear = Int(launchYearString.trimmingCharacters(in: CharacterSet.whitespaces))!
+        self.launchYear = Int(launchYearString.trimmingCharacters(in: CharacterSet.whitespaces)) ?? 0
         
         if 57 > launchYear {
             launchYear += 2000;

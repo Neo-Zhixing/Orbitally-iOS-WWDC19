@@ -203,7 +203,7 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
     let satelliteManager = ZeitSatTrackManager.sharedInstance
     
     public func loadSats () {
-        guard let url = Bundle.main.url(forResource: "Iridium", withExtension: "txt"),
+        guard let url = Bundle.main.url(forResource: "full", withExtension: "txt"),
             let tle = try? String(contentsOf: url) else {
             return
         }

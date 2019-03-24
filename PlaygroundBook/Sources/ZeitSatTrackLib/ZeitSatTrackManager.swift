@@ -539,19 +539,22 @@ open class ZeitSatTrackManager: NSObject, CLLocationManagerDelegate {
     ///
     /// - Parameter tleString: a string representing one or more TLE stanzas
     open func addSatellitesFromTLEData(tleString:String) {
+        print(1)
         let responseArray = tleString.components(separatedBy: "\n")
         let tleCount = responseArray.count / 3
-        
-        for i in 0..<tleCount {
+        print(1)
+        DispatchQueue.concurrentPerform(iterations: tleCount) {
+            i in
             let satName = responseArray[ i * 3].trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
             let lineOne = responseArray[1 + i * 3]
             let lineTwo = responseArray[2 + i * 3]
-            if satName.lengthOfBytes(using: .utf8) > 0  && alreadyExists(name: satName) == false {
+            if satName.lengthOfBytes(using: .utf8) > 0 {
                 //print("\(satName)")
                 let twoLineElementSet = TwoLineElementSet(nameOfSatellite: satName, lineOne: lineOne, lineTwo: lineTwo)
                 let satellite = Satellite(twoLineElementSet: twoLineElementSet)
                 self.satellites.append(satellite)
             } //of name length & duplication check
-        } // of TLE processing loop
+        }
+        print(2)
     }
 }
