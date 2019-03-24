@@ -102,7 +102,6 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
     }
     
     func compileShaders(_ tles: [TLE]) {
-        print(tles)
         let program = SCNProgram()
         program.fragmentFunctionName = "dot_fragment"
         program.vertexFunctionName = "dot_vertex"
@@ -117,7 +116,7 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
             semantic: .vertex,
             vectorCount: tles.count,
             usesFloatComponents: true,
-            componentsPerVector: 3,
+            componentsPerVector: 4,
             bytesPerComponent: MemoryLayout<Float>.size,
             dataOffset: 0,
             dataStride: MemoryLayout<TLE>.size
@@ -127,9 +126,9 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
             semantic: .normal,
             vectorCount: tles.count,
             usesFloatComponents: true,
-            componentsPerVector: 3,
+            componentsPerVector: 4,
             bytesPerComponent: MemoryLayout<Float>.size,
-            dataOffset: MemoryLayout<Float>.stride * 3,
+            dataOffset: MemoryLayout<Float>.stride * 4,
             dataStride: MemoryLayout<TLE>.size
         )
         let testgeo = SCNGeometry(sources: [
@@ -160,10 +159,9 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
             let rotationFromGeocentric = JulianMath.rotationFromGeocentricforJulianDate(julianDate: currentJulianDate)
             var data: [simd_float1] = [
                 fov,
-                simd_float1(currentJulianDate),
                 simd_float1(rotationFromGeocentric),
             ]
-            let count = MemoryLayout<simd_float1>.stride
+            let count = MemoryLayout<simd_float1>.stride * data.count
             stream.writeBytes(&data, count: count)
         }
     }
@@ -202,39 +200,40 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
     let satelliteManager = ZeitSatTrackManager.sharedInstance
     
     public func loadSats () {
-        guard let url = Bundle.main.url(forResource: "Iridium", withExtension: "txt"),
+        guard let url = Bundle.main.url(forResource: "full", withExtension: "txt"),
             let tle = try? String(contentsOf: url) else {
             return
         }
         satelliteManager.addSatellitesFromTLEData(tleString: tle)
-        
-        let currentDate = JulianMath.secondsSinceReferenceDate(Date())
-        let currentJulianDate = JulianMath.julianDateFromSecondsSinceReferenceDate(secondsSinceReferenceDate: currentDate)
-
         let tles = self.satelliteManager.satellites.map { (satellite) -> TLE in
             let tle = satellite.twoLineElementSet!
-            let currentMeanAnomaly = tle.meanAnomalyForJulianDate(julianDate: currentJulianDate)
-            let currentEccentricAnomaly = tle.eccentricAnomalyForMeanAnomaly(meanAnomaly: currentMeanAnomaly)
+            let currentDate = JulianMath.secondsSinceReferenceDate(Date())
+            let currentJulianDate = JulianMath.julianDateFromSecondsSinceReferenceDate(secondsSinceReferenceDate: currentDate)
+            let epoch = currentJulianDate - tle.epochAsJulianDate()
             return TLE(
-                eccentricAnomaly: Float(currentEccentricAnomaly),
+                meanAnomaly: Float(tle.meanAnomaly),
                 semimajorAxis: Float(tle.semimajorAxis()),
                 eccentricity: Float(tle.eccentricity),
                 inclination: Float(tle.inclination),
                 argumentOfPerigee: Float(tle.argumentOfPerigee),
-                rightAscensionOfTheAscendingNode: Float(tle.rightAscensionOfTheAscendingNode)
+                rightAscensionOfTheAscendingNode: Float(tle.rightAscensionOfTheAscendingNode),
+                epoch: Float(epoch),
+                meanMotion: Float(tle.meanMotion)
             )
         }
         compileShaders(tles)
-        for sat in satelliteManager.satellites {
+        /**for sat in satelliteManager.satellites {
             loadOrbits(satellite: sat)
-        }
+        }**/
     }
     struct TLE {
-        var eccentricAnomaly: Float
+        var meanAnomaly: Float
         var semimajorAxis: Float
         var eccentricity: Float
         var inclination: Float
         var argumentOfPerigee: Float
         var rightAscensionOfTheAscendingNode: Float
+        var epoch: Float;
+        var meanMotion: Float;
     }
 }

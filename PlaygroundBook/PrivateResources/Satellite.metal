@@ -13,12 +13,14 @@ using namespace metal;
 constant float EARTH_R = 1.0;
 
 struct TLE {
-    float eccentricAnomaly;
+    float meanAnomaly;
     float semimajorAxis;
     float eccentricity;
     float inclination;
     float argumentOfPerigee;
     float rightAscensionOfTheAscendingNode;
+    float epoch;
+    float meanMotion;
 };
 
 
@@ -31,15 +33,46 @@ float trueAnomalyForEccentricAnomaly(float eccentricAnomaly, float eccentricity)
     return 2.0 * atan2(sqrt(1 + eccentricity) * sin(halfEccentricAnomalyRad), sqrt(1 - eccentricity) * cos(halfEccentricAnomalyRad)) * 180.0 / M_PI_F;
 }
 
-
-float3 calc(TLE tle, float rotationFromGeocentric)
-{
+float meanAnomalyForJulianDate(float daysSinceEpoch, float meanMotion, float meanAnomaly) {
+    float revolutionsSinceEpoch = meanMotion * daysSinceEpoch;
+    float meanAnomalyForJulianDate = meanAnomaly + revolutionsSinceEpoch * 360.0;
+    float fullRevolutions = floor(meanAnomalyForJulianDate / 360.0);
+    float adjustedMeanAnomalyForJulianDate = meanAnomalyForJulianDate - 360.0 * fullRevolutions;
     
-    float currentTrueAnomaly = trueAnomalyForEccentricAnomaly(tle.eccentricAnomaly, tle.eccentricity);
+    return adjustedMeanAnomalyForJulianDate;
+}
+
+float eccentricAnomalyForMeanAnomaly(float meanAnomaly, float eccentricity) {
+
+        // Do Newton–Raphson to solve Kepler's Equation : M = E - e * sin(E)
+        // Start with the estimate = meanAnomaly converted to radians
+        
+    float estimate = 0.0;
+    float estimateError = 1;
+    float meanAnomalyInRadians = meanAnomaly * M_PI_F / 180.0;
+    float previousEstimate = meanAnomalyInRadians;
+    
+    while (estimateError > 0.0001){
+        estimate = previousEstimate - (previousEstimate - eccentricity * sin(previousEstimate) - meanAnomalyInRadians) / ( 1 - eccentricity * cos(previousEstimate) );
+        estimateError = fabs(estimate - previousEstimate);
+        previousEstimate = estimate;
+    }
+    
+    return (estimate * 180.0 / M_PI_F);
+}
+
+
+float3 calc(TLE tle, float rotationFromGeocentric, float time)
+{
+    float meanAnomaly = meanAnomalyForJulianDate(tle.epoch + time / 864.0, tle.meanMotion, tle.meanAnomaly);
+    
+    float eccentricAnomaly = eccentricAnomalyForMeanAnomaly(meanAnomaly, tle.eccentricity);
+    
+    float currentTrueAnomaly = trueAnomalyForEccentricAnomaly(eccentricAnomaly, tle.eccentricity);
     float semimajorAxis = tle.semimajorAxis;
     
     // Solve for r0 : the distance from the satellite to the Earth's center
-    float currentOrbitalRadius = semimajorAxis - (semimajorAxis * tle.eccentricity) * cospi(tle.eccentricAnomaly / 180.0);
+    float currentOrbitalRadius = semimajorAxis - (semimajorAxis * tle.eccentricity) * cospi(eccentricAnomaly / 180.0);
     
     // Solve for the x and y position in the orbital plane
     float orbitalX = currentOrbitalRadius * cospi(currentTrueAnomaly / 180.0);
@@ -85,8 +118,8 @@ float3 calc(TLE tle, float rotationFromGeocentric)
 
 
 struct VertexIn {
-    float3 position [[attribute(SCNVertexSemanticPosition)]];
-    float3 normal [[attribute(SCNVertexSemanticNormal)]];
+    float4 position [[attribute(SCNVertexSemanticPosition)]];
+    float4 normal [[attribute(SCNVertexSemanticNormal)]];
 };
 
 struct VertexOut {
@@ -101,7 +134,6 @@ struct FragmentIn {
 
 struct OrbitallyFrame {
     float fov;
-    float julian_date;
     float rotationFromGeocentric;
 };
 
@@ -117,19 +149,17 @@ vertex VertexOut dot_vertex(VertexIn in [[ stage_in ]],
                             constant OrbitallyFrame & orbitally_frame[[buffer(2)]])
 {
     TLE tle;
-    tle.eccentricAnomaly = in.position.x;
+    tle.meanAnomaly = in.position.x;
     tle.semimajorAxis = in.position.y;
     tle.eccentricity = in.position.z;
-    
-    tle.inclination = in.normal.x;
-    tle.argumentOfPerigee = in.normal.y;
-    tle.rightAscensionOfTheAscendingNode = in.normal.z;
+    tle.inclination = in.position.w;
+    tle.argumentOfPerigee = in.normal.x;
+    tle.rightAscensionOfTheAscendingNode = in.normal.y;
+    tle.epoch = in.normal.z;
+    tle.meanMotion = in.normal.w;
     
     //float3 position = in.position;
-    float3 position = calc(tle, orbitally_frame.rotationFromGeocentric);
-    position.x /= EARTH_R;
-    position.y /= EARTH_R;
-    position.z /= EARTH_R;
+    float3 position = calc(tle, orbitally_frame.rotationFromGeocentric, scn_frame.time);
     VertexOut out;
     out.position = scn_frame.viewProjectionTransform * float4(position, 1.0);
     
