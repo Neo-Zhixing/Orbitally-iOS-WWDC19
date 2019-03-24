@@ -23,14 +23,45 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
     public func liveViewMessageConnectionClosed() {
         // Implement this method to be notified when the live view message connection is closed.
         // The connection will be closed when the process running Contents.swift exits and is no longer listening for messages.
-        // This happens when the user's code naturally finishes running, if the user presses Stop, or if there is a crash.
+        // This happens when the user's code naturally finishesws running, if the user presses Stop, or if there is a crash.
     }
     */
-
+    public  init() {
+        super.init(nibName: nil, bundle: nil)
+    }
+    public init(_ name: String) {
+        self.filename = name
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     public func receive(_ message: PlaygroundValue) {
-        // Implement this method to receive messages sent from the process running Contents.swift.
-        // This method is *required* by the PlaygroundLiveViewMessageHandler protocol.
-        // Use this method to decode any messages sent as PlaygroundValue values and respond accordingly.
+        guard case let .dictionary(dict) = message else {
+            return
+        }
+        if case var .some(.floatingPoint(accelerate)) = dict["speed"] {
+            if accelerate > 100000 {
+                accelerate = 100000
+            } else if accelerate < 1 {
+                accelerate = 1
+            }
+            self.accelerate = Float(accelerate)
+            self.startAnimate()
+        }
+        if case let .some(.boolean(trace)) = dict["trace"] {
+            if (trace != self.alwaysShowOrbits) {
+                self.alwaysShowOrbits = trace
+                if trace {
+                    self.loadOrbits()
+                } else {
+                    self.orbitNode?.geometry = nil
+                }
+                
+            }
+        }
     }
     
     public var earthNode: SCNNode!
@@ -102,12 +133,39 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
         return nil
     }
     
-    func compileShaders(_ tles: [TLE]) {
+    var program: SCNProgram!
+    func compileShaders() {
         let program = SCNProgram()
+        self.program = program
         program.fragmentFunctionName = "dot_fragment"
         program.vertexFunctionName = "dot_vertex"
         program.library = self.getShaders()
         
+        
+        
+        program.handleBinding(ofBufferNamed: "orbitally_frame", frequency: .perFrame) { (stream, node, shadable, renderer) in
+            let fov: simd_float1
+            if #available(iOS 11.0, *) {
+                fov = Float(renderer.pointOfView?.camera?.fieldOfView ?? 1)
+            } else {
+                fov = Float(renderer.pointOfView?.camera?.xFov ?? 1)
+            }
+            
+            let currentDate = JulianMath.secondsSinceReferenceDate(Date())
+            let currentJulianDate = JulianMath.julianDateFromSecondsSinceReferenceDate(secondsSinceReferenceDate: currentDate)
+            let rotationFromGeocentric = JulianMath.rotationFromGeocentricforJulianDate(julianDate: currentJulianDate)
+            var data: [simd_float1] = [
+                fov,
+                simd_float1(rotationFromGeocentric),
+                86400.0 / self.accelerate
+            ]
+            let count = MemoryLayout<simd_float1>.stride * data.count
+            stream.writeBytes(&data, count: count)
+        }
+    }
+    
+    var satNode: SCNNode?
+    public func loadSatGeometry(_ tles: [TLE]) {
         let indices: [UInt32] = [UInt32](0 ..< UInt32(tles.count))
         
         let data = Data(bytes: tles, count: tles.count * MemoryLayout<TLE>.size)
@@ -133,60 +191,63 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
             dataStride: MemoryLayout<TLE>.size
         )
         let testgeo = SCNGeometry(sources: [
-                positionGeometry,
-                normalGeometry,
+            positionGeometry,
+            normalGeometry,
             ], elements:
             [SCNGeometryElement(indices: indices, primitiveType: .point)]
         )
         let material = SCNMaterial()
+        if (program == nil) {
+            self.compileShaders()
+        }
         material.program = program
         material.blendMode = .add
         
         testgeo.firstMaterial = material
-
-        let testnode = SCNNode(geometry: testgeo)
-        self.scene.rootNode.addChildNode(testnode)
         
-        program.handleBinding(ofBufferNamed: "orbitally_frame", frequency: .perFrame) { (stream, node, shadable, renderer) in
-            let fov: simd_float1
-            if #available(iOS 11.0, *) {
-                fov = Float(renderer.pointOfView?.camera?.fieldOfView ?? 1)
-            } else {
-                fov = Float(renderer.pointOfView?.camera?.xFov ?? 1)
-            }
-            
-            let currentDate = JulianMath.secondsSinceReferenceDate(Date())
-            let currentJulianDate = JulianMath.julianDateFromSecondsSinceReferenceDate(secondsSinceReferenceDate: currentDate)
-            let rotationFromGeocentric = JulianMath.rotationFromGeocentricforJulianDate(julianDate: currentJulianDate)
-            var data: [simd_float1] = [
-                fov,
-                simd_float1(rotationFromGeocentric),
-                86400.0 / self.accelerate
-            ]
-            let count = MemoryLayout<simd_float1>.stride * data.count
-            stream.writeBytes(&data, count: count)
+        if let satNode = self.satNode {
+            satNode.geometry = testgeo
+        } else {
+            let node = SCNNode(geometry: testgeo)
+            self.scene.rootNode.addChildNode(node)
+            self.satNode = node
         }
+        
     }
-    public var accelerate: Float = 1000
     
-    public func loadOrbits(satellite: Satellite) {
+    public var accelerate: Float = 100
+    
+    public var orbitNode: SCNNode?
+    public func loadOrbits() {
+        if self.orbitNode == nil {
+            let node = SCNNode()
+            self.scene.rootNode.addChildNode(node)
+            self.orbitNode = node
+        }
+        let orbitNode = self.orbitNode!
         let currentDate = JulianMath.secondsSinceReferenceDate(Date())
         let currentJulianDate = JulianMath.julianDateFromSecondsSinceReferenceDate(secondsSinceReferenceDate: currentDate)
         
         let range:Range<UInt8> = 0..<45
-        let vertices = range.map{
-            (degree: UInt8)  -> SCNVector3 in
-            let anomaly: Double = Double(degree) * 8.0
-            let pos = satellite.satelliteCartesianPosition(eccentricAnomaly: anomaly, julianDate: currentJulianDate)
-            return SCNVector3(x: Float(pos.x), y: Float(pos.y), z: Float(pos.z))
-        }
         
+        var vertices = [SCNVector3]()
+        vertices.reserveCapacity(self.satelliteManager.satellites.count * 45)
         
-        var indices: [UInt32] = (0 ..< UInt32(vertices.count) * 2).map{
-            index in
-            return (index + 1) / 2
+        var indices = [UInt32]()
+        indices.reserveCapacity(self.satelliteManager.satellites.count * 45 * 2)
+
+        for (satIndex, sat) in self.satelliteManager.satellites.enumerated() {
+            for dotIndex in range {
+                let anomaly: Double = Double(dotIndex) * 8.0
+                let pos = sat.satelliteCartesianPosition(eccentricAnomaly: anomaly, julianDate: currentJulianDate)
+                let vector = SCNVector3(x: Float(pos.x), y: Float(pos.y), z: Float(pos.z))
+                vertices.append(vector)
+                let firstIndex = UInt32(satIndex) * 45
+                let index: UInt32 = firstIndex + UInt32(dotIndex)
+                indices.append(index)
+                indices.append(dotIndex == 44 ? firstIndex : index+1)
+            }
         }
-        indices[indices.count-1] = 0
         let testgeo = SCNGeometry(sources: [SCNGeometrySource(vertices: vertices)], elements:
             [SCNGeometryElement(indices: indices, primitiveType: .line)]
         )
@@ -194,16 +255,16 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
         material.emission.contents = UIColor.white
         
         testgeo.firstMaterial = material
-        
-        let testnode = SCNNode(geometry: testgeo)
-        self.scene.rootNode.addChildNode(testnode)
-        
+        orbitNode.geometry = testgeo
     }
     
     let satelliteManager = ZeitSatTrackManager.sharedInstance
     
+    var filename: String?
+    
     public func loadSats () {
-        guard let url = Bundle.main.url(forResource: "full", withExtension: "txt"),
+        guard let filename = self.filename,
+            let url = Bundle.main.url(forResource: filename, withExtension: "txt"),
             let tle = try? String(contentsOf: url) else {
             return
         }
@@ -224,15 +285,13 @@ public class LiveViewController: UIViewController, PlaygroundLiveViewMessageHand
                 meanMotion: Float(tle.meanMotion)
             )
         }
-        compileShaders(tles)
+        loadSatGeometry(tles)
         if alwaysShowOrbits {
-            for sat in satelliteManager.satellites {
-             loadOrbits(satellite: sat)
-            }
+            loadOrbits()
         }
     }
-    public let alwaysShowOrbits = false
-    struct TLE {
+    public var alwaysShowOrbits = false
+    public struct TLE {
         var meanAnomaly: Float
         var semimajorAxis: Float
         var eccentricity: Float

@@ -3,13 +3,10 @@
 <plist version="1.0">
 <dict>
 	<key>Name</key>
-	<string>Learning Orbits</string>
+	<string>Orbit 101: Introduction</string>
 	<key>Pages</key>
 	<array>
-		<string>GEO.playgroundpage</string>
-		<string>LEO.playgroundpage</string>
-		<string>HEO.playgroundpage</string>
-		<string>Iridium.playgroundpage</string>
+		<string>Earth.playgroundpage</string>
 	</array>
 </dict>
 </plist>

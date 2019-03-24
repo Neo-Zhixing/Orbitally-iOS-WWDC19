@@ -18,6 +18,7 @@
 	<string>PlaygroundBookName</string>
 	<key>Chapters</key>
 	<array>
+		<string>Intro.playgroundchapter</string>
 		<string>Orbits.playgroundchapter</string>
 	</array>
 </dict>

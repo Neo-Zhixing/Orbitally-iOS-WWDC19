@@ -8,10 +8,12 @@
 import UIKit
 import PlaygroundSupport
 
-/// Instantiates a new instance of a live view.
-///
-/// By default, this loads an instance of `LiveViewController` from `LiveView.storyboard`.
-public func instantiateLiveView() -> PlaygroundLiveViewable {
+public func instantiateLiveView(_ name: String) -> LiveViewController {
+    let vc = LiveViewController(name)
+    return vc
+}
+
+public func instantiateLiveView() -> LiveViewController {
     let vc = LiveViewController()
     return vc
 }
