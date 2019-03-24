@@ -1,5 +1,4 @@
 import PlaygroundSupport
 
-let view = instantiateLiveView("geo")
-view.dotSize = 1.0
+let view = instantiateARLiveView("full")
 PlaygroundPage.current.liveView = view

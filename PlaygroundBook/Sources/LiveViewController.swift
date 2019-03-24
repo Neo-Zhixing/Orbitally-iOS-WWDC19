@@ -110,9 +110,7 @@ public class LiveViewController: UIViewController, SCNSceneRendererDelegate, Pla
     var audioplayer: AVAudioPlayer?
     public override func viewDidLoad() {
         if let soundURL = Bundle.main.url(forResource: "bgm", withExtension: "aac") {
-            print(soundURL)
             let beepPlayer = try? AVAudioPlayer(contentsOf: soundURL)
-            print(beepPlayer)
             beepPlayer?.prepareToPlay()
             beepPlayer?.play()
             self.audioplayer = beepPlayer
@@ -148,12 +146,25 @@ public class LiveViewController: UIViewController, SCNSceneRendererDelegate, Pla
         self.startAnimate()
         
         //self.loadSats()
+        
+        self.dummyNode = SCNNode(geometry: SCNSphere(radius: self.initialCameraPosition))
+        self.scene.rootNode.addChildNode(self.dummyNode!)
     }
     public var rendered = false
+    public var initialCameraPosition: CGFloat = 1
+    public var dummyNode: SCNNode?
+
     public func renderer(_ renderer: SCNSceneRenderer, willRenderScene scene: SCNScene, atTime time: TimeInterval) {
         if !rendered {
             rendered = true
             self.loadSats()
+        }
+    }
+    
+    public func renderer(_ renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: TimeInterval) {
+        if let dummyNode = self.dummyNode {
+            dummyNode.removeFromParentNode()
+            self.dummyNode = nil
         }
     }
     

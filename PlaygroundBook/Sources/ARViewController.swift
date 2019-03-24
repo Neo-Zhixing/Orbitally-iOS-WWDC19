@@ -18,9 +18,13 @@ public class ARViewController: LiveViewController {
         self.arSceneView = view
         self.sceneView = view
         self.scene = view.scene
+        self.sceneView.delegate = self
     }
     
     public override func viewDidLoad() {
+        self.dotSize = 10.0
+        self.alwaysShowOrbits = true
+        self.accelerate = 100
         super.viewDidLoad()
         self.earthNode.position = SCNVector3(0, 0, 0)
         self.satNode?.position = SCNVector3(0, 0, 0)
@@ -31,6 +35,7 @@ public class ARViewController: LiveViewController {
         self.lightNode.removeFromParentNode()
         self.light = nil
         self.lightNode = nil
+
     }
     
     public override func viewWillAppear(_ animated: Bool) {
