@@ -21,7 +21,7 @@ let earthView = PlaygroundPage.current.liveView as? PlaygroundRemoteLiveViewProx
 
 let trace: Bool = /*#-editable-code*/false/*#-end-editable-code*/
 
-let simulationSpeed: Double = /*#-editable-code*/5000/*#-end-editable-code*/
+let simulationSpeed: Double = /*#-editable-code*/10000/*#-end-editable-code*/
 
 //#-hidden-code
 earthView?.send(.dictionary([
@@ -29,12 +29,12 @@ earthView?.send(.dictionary([
     "trace": .boolean(trace)
     ]))
 
-if simulationSpeed >= 10000 {
+if simulationSpeed >= 30000 {
     PlaygroundPage.current.assessmentStatus = .pass(message: "Drizzling, isn't it?")
 } else {
     PlaygroundPage.current.assessmentStatus = .fail(hints: [
         "\(simulationSpeed) is not big enough for you to see the change in speed for HEO satellites.",
-        "Set 'simulationSpeed' to 10000",
-        ], solution: "let simulationSpeed: Double = 10000")
+        "Set 'simulationSpeed' to 50000",
+        ], solution: "let simulationSpeed: Double = 50000")
 }
 //#-end-hidden-code
