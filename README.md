@@ -1,5 +1,7 @@
 #  Orbitally Playground Book #
 
+[YouTube](https://www.youtube.com/watch?v=LrvdOtkK2WA)
+
 ## Overview ##
 
 This is my 2019 WWDC Scholarship submission.
