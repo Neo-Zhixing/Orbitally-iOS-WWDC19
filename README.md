@@ -2,6 +2,8 @@
 
 [YouTube](https://www.youtube.com/watch?v=LrvdOtkK2WA)
 
+To Download the playground book file, navigate to the "Release" tab.
+
 ## Overview ##
 
 This is my 2019 WWDC Scholarship submission.
